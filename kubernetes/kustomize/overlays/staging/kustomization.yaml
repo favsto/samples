@@ -1,0 +1,14 @@
+bases:
+- ../../base
+
+patchesStrategicMerge:
+ - deployment.yaml
+
+namePrefix: staging-
+
+namespace: staging-demo-kustomize
+
+configMapGenerator:
+- name: the-map
+  literals:
+    - kzEnv=staging

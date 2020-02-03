@@ -1,0 +1,14 @@
+bases:
+  - ../../base
+
+patchesStrategicMerge:
+  - deployment.yaml
+
+namePrefix: production-
+
+namespace: production-demo-kustomize
+
+configMapGenerator:
+- name: the-map
+  literals:
+    - kzEnv=production

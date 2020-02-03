@@ -1,0 +1,18 @@
+# declare ConfigMap as a resource
+resources:
+- deployment.yaml
+- service.yaml
+- namespace.yaml
+
+# declare namespace
+namespace: demo-kustomize
+
+# some labels
+commonLabels:
+  kustomizer: fausto
+
+# declare ConfigMap from a ConfigMapGenerator
+# configMapGenerator:
+# - name: the-map
+#   literals:
+#     - kzEnv=demo

@@ -1,0 +1,32 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace:  demo-nginx
+  labels:
+    app: nginx
+    target: demo
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+      target: demo
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: nginx
+        target: demo
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.17.3
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "200Mi"
+            cpu: "300m"
+          requests:
+            memory: "100Mi"
+            cpu: "100m"

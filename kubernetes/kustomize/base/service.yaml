@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: env-service
+spec:
+  selector:
+    app: env-site
+    target: demo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: volumes-http
+  type: LoadBalancer

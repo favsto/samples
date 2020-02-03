@@ -1,0 +1,8 @@
+- name: System updater
+  hosts: all
+  tasks:
+  
+  - name: Run apt update
+    become: yes
+    command: apt update
+      

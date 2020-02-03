@@ -1,0 +1,5 @@
+service_account_path      = "<json-path>"
+project_id                = "<project-id>"
+gce_service_account_email = "<project-number>-compute@developer.gserviceaccount.com"
+gcp_region                = "europe-west1"
+gcp_zone_letter           = "d"

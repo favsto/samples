@@ -1,0 +1,40 @@
+imports:
+- path: network-template.jinja
+- path: subnetwork-template.jinja
+- path: firewall-template.jinja
+- path: instance-template.jinja
+
+
+resources:
+
+- name: front-network
+  type: network-template.jinja
+
+- name: front-subnet-eu
+  type: subnetwork-template.jinja
+  properties:
+    ipCidrRange: 10.0.0.0/20
+    network: $(ref.front-network.selfLink)
+    region: europe-west1
+
+- name: front-network-allow-http-ssh-rdp
+  type: firewall-template.jinja
+  properties:
+    network: $(ref.front-network.selfLink)
+    IPProtocol: TCP
+    Port: [22, 80, 3389]
+
+- name: front-network-allow-icmp
+  type: firewall-template.jinja
+  properties:
+    network: $(ref.front-network.selfLink)
+    IPProtocol: ICMP
+    Port: []
+
+- name: front-eu-vm
+  type: instance-template.jinja
+  properties:
+    zone: europe-west1-d
+    machineType: n1-standard-1
+    network: $(ref.front-network.selfLink)
+    subnetwork: $(ref.front-subnet-eu.selfLink)

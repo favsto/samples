@@ -1,0 +1,13 @@
+# custom types
+resources:
+- name: {{ properties['name'] }}
+  type: deploymentmanager.v2beta.typeProvider
+  properties:
+    # name: {{ properties['name'] }}
+    descriptorUrl: {{ properties['descriptorUrl'] }}
+    options:
+      inputMappings:
+      - fieldName: Authorization
+        location: HEADER
+        value: >
+          $.concat("Bearer ", $.googleOauth2AccessToken())

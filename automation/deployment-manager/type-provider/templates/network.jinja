@@ -1,0 +1,28 @@
+resources:
+
+- name: custom-{{ properties['name'] }}
+  type: compute.v1.network
+  properties:
+    autoCreateSubnetworks: false
+    routingConfig:
+        routingMode: {{ properties['routingMode'] }}  
+
+{% for subnet in properties['subnets'] %}
+
+- name: {{ subnet['name'] }}
+  type: compute.v1.subnetwork
+  metadata:
+    dependsOn:
+    - custom-{{ properties['name'] }}
+  properties:
+    region: {{ subnet["region"] }}
+    ipCidrRange: {{ subnet["ipCidrRange"] }}
+    privateIpGoogleAccess: {{ subnet["privateIpGoogleAccess"] }}
+    enableFlowLogs: {{ subnet["enableFlowLogs"] }}
+    network: $(ref.custom-{{ properties['name'] }}.selfLink)
+
+{% endfor %}
+
+outputs:
+  - name: network
+    value: $(ref.custom-{{ properties['name'] }}.selfLink)

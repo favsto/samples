@@ -1,0 +1,76 @@
+imports:
+- path: "templates/network.jinja"
+  name: network.jinja
+- path: "templates/cloud-sql-internal.jinja"
+  name: cloud-sql-internal.jinja
+- path: "templates/custom-gcp-type.jinja"
+  name: custom-gcp-type.jinja
+
+resources:
+
+# create a custom type for Service Networking API
+- name: servicenetworking
+  type: custom-gcp-type.jinja
+  properties:
+    name: servicenetworking
+    descriptorUrl: 'https://servicenetworking.googleapis.com/$discovery/rest?version=v1'
+
+- name: my-demo-net
+  type: network.jinja
+  properties:
+    name: demo-net
+    routingMode: REGIONAL
+    subnets:
+    - name: demo-net
+      region: europe-west4
+      ipCidrRange: 10.0.0.0/24
+      privateIpGoogleAccess: true
+      enableFlowLogs: false
+
+# my custom type provider for calling GoogleService Networking APIs 
+- name: my-cloud-sql
+  type: cloud-sql-internal.jinja
+  metadata:
+    dependsOn:
+    - servicenetworking
+    - my-demo-net
+  properties:
+    instanceName: demo-sql-internal
+    instanceTier: db-custom-1-3840
+    availabilityType: REGIONAL
+    dataDiskSize: 50
+    region: europe-west4
+    zone: europe-west4-c
+    address: 192.168.0.0 # optional
+    prefixLength: 24
+    network: $(ref.my-demo-net.network)
+    rootPassword: a-simple-password
+
+# - name: servicenetworking
+#   type: deploymentmanager.v2beta.typeProvider
+#   properties:
+#     descriptorUrl: "https://servicenetworking.googleapis.com/$discovery/rest?version=v1"
+#     options:
+#         inputMappings:
+#         - fieldName: Authorization
+#           location: HEADER
+#           value: >
+#             $.concat("Bearer ", $.googleOauth2AccessToken())
+# - name: vpc-peering-addresses
+#   type: compute.v1.globalAddress
+#   properties:
+#     network: https://www.googleapis.com/compute/v1/projects/fausto-lab/global/networks/fausto-lab
+#     prefixLength: 16
+#     purpose: VPC_PEERING
+#     addressType: INTERNAL
+# - name: gcp-private-vpc-peering
+#   action: fausto-lab/servicenetworking:servicenetworking.services.connections.create
+#   metadata:
+#     dependsOn:
+#     - vpc-peering-addresses
+#     - servicenetworking
+#   properties:
+#     parent: services/servicenetworking.googleapis.com
+#     network: projects/fausto-lab/global/networks/fausto-lab
+#     reservedPeeringRanges:
+#     - vpc-peering-addresses

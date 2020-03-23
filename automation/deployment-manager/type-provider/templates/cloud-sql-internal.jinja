@@ -1,0 +1,68 @@
+resources:
+
+# a private network dedicated to the DB
+- name: vpc-peering-addresses
+  type: compute.v1.globalAddress
+  properties:
+    {% if properties['address'] %}
+    address: {{ properties['address']}}
+    {% endif %}
+    prefixLength: {{ properties['prefixLength']}}
+    network: {{ properties['network'] }}
+    purpose: VPC_PEERING
+    addressType: INTERNAL
+
+# establish the peering between the SQL private network and the mine
+- name: private-vpc-peering
+  action: {{ env["project"] }}/servicenetworking:servicenetworking.services.connections.create
+  metadata:
+    dependsOn:
+    - vpc-peering-addresses
+  properties:
+    parent: services/servicenetworking.googleapis.com
+    network: {{ properties['network'] }}
+    reservedPeeringRanges:
+    - vpc-peering-addresses
+
+- name: {{ properties['instanceName'] }}
+  type: sqladmin.v1beta4.instance
+  metadata:
+    dependsOn:
+    - private-vpc-peering
+  properties:
+    backendType: SECOND_GEN
+    instanceType: CLOUD_SQL_INSTANCE
+    databaseVersion: POSTGRES_11
+    region: {{ properties['region'] }}
+    rootPassword: {{ properties['rootPassword'] }}
+    settings:
+      tier: {{ properties['instanceTier'] }}
+      availabilityType: {{ properties['availabilityType'] }}
+      storageAutoResize: true
+      replicationType: SYNCHRONOUS
+      dataDiskSizeGb: {{ properties['dataDiskSize'] }}
+      dataDiskType: PD_SSD
+      locationPreference:
+        zone: {{ properties['zone'] }}
+      activationPolicy: ALWAYS
+      maintenanceWindow:
+        hour: 0
+        day: 7
+      backupConfiguration:
+        enabled: true
+        startTime: "22:00"
+      ipConfiguration:
+        ipv4Enabled: false
+        privateNetwork: {{ properties['network'] }}
+   
+{#
+{% if properties['database'] %}
+{% for db in properties['databases'] %}
+- name: {{ db['name'] }}-db
+  type: sqladmin.v1beta4.database
+  properties:
+    name: {{ db['name'] }}
+    instance: $(ref.isa-{{ properties['stage'] }}-pg)
+{% endfor %}
+{% endif %}
+#}

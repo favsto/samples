@@ -62,7 +62,7 @@ resources:
   type: sqladmin.v1beta4.database
   properties:
     name: {{ db['name'] }}
-    instance: $(ref.isa-{{ properties['stage'] }}-pg)
+    instance: $(ref.{{ properties['stage'] }}-pg)
 {% endfor %}
 {% endif %}
 #}

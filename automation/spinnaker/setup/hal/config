@@ -1,0 +1,339 @@
+urrentDeployment: default
+deploymentConfigurations:
+- name: default
+  version: 1.18.4
+  providers:
+    appengine:
+      enabled: false
+      accounts: []
+    aws:
+      enabled: false
+      accounts: []
+      bakeryDefaults:
+        baseImages: []
+      defaultKeyPairTemplate: '{{name}}-keypair'
+      defaultRegions:
+      - name: us-west-2
+      defaults:
+        iamRole: BaseIAMRole
+    ecs:
+      enabled: false
+      accounts: []
+    azure:
+      enabled: false
+      accounts: []
+      bakeryDefaults:
+        templateFile: azure-linux.json
+        baseImages: []
+    dcos:
+      enabled: false
+      accounts: []
+      clusters: []
+    dockerRegistry:
+      enabled: true
+      accounts:
+      - name: default-container-registry
+        requiredGroupMembership: []
+        providerVersion: V1
+        permissions: {}
+        address: https://eu.gcr.io
+        username: _json_key
+        email: fake.email@spinnaker.io
+        cacheIntervalSeconds: 30
+        clientTimeoutMillis: 60000
+        cacheThreads: 1
+        paginateSize: 100
+        sortTagsByDate: false
+        trackDigests: false
+        insecureRegistry: false
+        repositories: []
+        passwordFile: /home/spinnaker/.gcp/service-account.json
+      primaryAccount: default-container-registry
+    google:
+      enabled: false
+      accounts: []
+      bakeryDefaults:
+        templateFile: gce.json
+        baseImages: []
+        zone: us-central1-f
+        network: default
+        useInternalIp: false
+    huaweicloud:
+      enabled: false
+      accounts: []
+      bakeryDefaults:
+        baseImages: []
+    kubernetes:
+      enabled: true
+      accounts:
+      - name: default-k8s-account
+        requiredGroupMembership: []
+        providerVersion: V2
+        permissions: {}
+        dockerRegistries: []
+        context: injenia-demo-spinnaker
+        configureImagePullSecrets: true
+        cacheThreads: 1
+        namespaces: []
+        omitNamespaces: []
+        kinds: []
+        omitKinds: []
+        customResources: []
+        cachingPolicies: []
+        kubeconfigFile: /root/.kube/config
+        oAuthScopes: []
+        onlySpinnakerManaged: false
+      - name: application-k8s-account
+        requiredGroupMembership: []
+        providerVersion: V2
+        permissions: {}
+        dockerRegistries: []
+        context: application-cluster
+        configureImagePullSecrets: true
+        cacheThreads: 1
+        namespaces: []
+        omitNamespaces: []
+        kinds: []
+        omitKinds: []
+        customResources: []
+        cachingPolicies: []
+        kubeconfigFile: /root/.kube/config
+        oAuthScopes: []
+        onlySpinnakerManaged: false
+      primaryAccount: default-k8s-account
+    oracle:
+      enabled: false
+      accounts: []
+      bakeryDefaults:
+        templateFile: oci.json
+        baseImages: []
+    cloudfoundry:
+      enabled: false
+      accounts: []
+  deploymentEnvironment:
+    size: SMALL
+    type: Distributed
+    accountName: default-k8s-account
+    imageVariant: SLIM
+    updateVersions: true
+    consul:
+      enabled: false
+    vault:
+      enabled: false
+    customSizing: {}
+    sidecars: {}
+    initContainers: {}
+    hostAliases: {}
+    affinity: {}
+    tolerations: {}
+    nodeSelectors: {}
+    gitConfig:
+      upstreamUser: spinnaker
+    livenessProbeConfig:
+      enabled: false
+    haServices:
+      clouddriver:
+        enabled: false
+        disableClouddriverRoDeck: false
+      echo:
+        enabled: false
+  persistentStorage:
+    persistentStoreType: gcs
+    azs: {}
+    gcs:
+      jsonPath: /home/spinnaker/.gcp/service-account.json
+      project: injenia-demo-spinnaker
+      bucket: spin-d566c1ae-8c79-4ed0-b6e0-285df2eb7c85
+      rootFolder: front50
+      bucketLocation: eu
+    redis: {}
+    s3:
+      rootFolder: front50
+    oracle: {}
+  features:
+    auth: false
+    fiat: false
+    chaos: false
+    entityTags: false
+    artifacts: true
+  metricStores:
+    datadog:
+      enabled: false
+      tags: []
+    prometheus:
+      enabled: false
+      add_source_metalabels: true
+    stackdriver:
+      enabled: false
+    newrelic:
+      enabled: false
+      tags: []
+    period: 30
+    enabled: false
+  notifications:
+    slack:
+      enabled: false
+    twilio:
+      enabled: false
+      baseUrl: https://api.twilio.com/
+    github-status:
+      enabled: false
+  timezone: America/Los_Angeles
+  ci:
+    jenkins:
+      enabled: false
+      masters: []
+    travis:
+      enabled: false
+      masters: []
+    wercker:
+      enabled: false
+      masters: []
+    concourse:
+      enabled: false
+      masters: []
+    gcb:
+      enabled: true
+      accounts:
+      - name: spinnaker-gcb-trigger
+        permissions: {}
+        project: injenia-demo-spinnaker
+        subscriptionName: spinnaker-cloud-build
+        jsonKey: /home/spinnaker/.gcp/service-account.json
+  repository:
+    artifactory:
+      enabled: false
+      searches: []
+  security:
+    apiSecurity:
+      ssl:
+        enabled: false
+    uiSecurity:
+      ssl:
+        enabled: false
+    authn:
+      oauth2:
+        enabled: false
+        client:
+          clientId: 505737348189-or9ivg7t55s0go3udrlf52eo6b5l7of3.apps.googleusercontent.com
+          clientSecret: ruUtFpjd3yuYvl7TmYsSfWlD
+          accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+          userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+          scope: profile email
+        userInfoRequirements:
+          hd: injenia.it
+        resource:
+          userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+        userInfoMapping:
+          email: email
+          firstName: given_name
+          lastName: family_name
+        provider: GOOGLE
+      saml:
+        enabled: false
+        userAttributeMapping: {}
+      ldap:
+        enabled: false
+      x509:
+        enabled: false
+      iap:
+        enabled: false
+      enabled: false
+    authz:
+      groupMembership:
+        service: EXTERNAL
+        google:
+          roleProviderType: GOOGLE
+        github:
+          roleProviderType: GITHUB
+        file:
+          roleProviderType: FILE
+        ldap:
+          roleProviderType: LDAP
+      enabled: false
+  artifacts:
+    bitbucket:
+      enabled: true
+      accounts:
+      - name: injenia-bitbucket-account
+        usernamePasswordFile: /home/spinnaker/.auth/bitbucket
+    gcs:
+      enabled: false
+      accounts: []
+    oracle:
+      enabled: false
+      accounts: []
+    github:
+      enabled: false
+      accounts: []
+    gitlab:
+      enabled: false
+      accounts: []
+    gitrepo:
+      enabled: false
+      accounts: []
+    http:
+      enabled: false
+      accounts: []
+    helm:
+      enabled: false
+      accounts: []
+    s3:
+      enabled: false
+      accounts: []
+    maven:
+      enabled: false
+      accounts: []
+    templates: []
+  pubsub:
+    enabled: true
+    google:
+      enabled: true
+      pubsubType: GOOGLE
+      subscriptions: []
+      publishers: []
+  canary:
+    enabled: false
+    serviceIntegrations:
+    - name: google
+      enabled: false
+      accounts: []
+      gcsEnabled: false
+      stackdriverEnabled: false
+    - name: prometheus
+      enabled: false
+      accounts: []
+    - name: datadog
+      enabled: false
+      accounts: []
+    - name: signalfx
+      enabled: false
+      accounts: []
+    - name: aws
+      enabled: false
+      accounts: []
+      s3Enabled: false
+    - name: newrelic
+      enabled: false
+      accounts: []
+    reduxLoggerEnabled: true
+    defaultJudge: NetflixACAJudge-v1.0
+    stagesEnabled: true
+    templatesEnabled: true
+    showAllConfigsEnabled: true
+  plugins:
+    plugins: []
+    enabled: false
+    downloadingEnabled: false
+  spinnaker:
+    extensibility:
+      repositories: {}
+  webhook:
+    trust:
+      enabled: false
+  telemetry:
+    enabled: false
+    endpoint: https://stats.spinnaker.io
+    instanceId: 01E2GTFQD48VH3KB1VAHRHGPXS
+    connectionTimeoutMillis: 3000
+    readTimeoutMillis: 5000

@@ -1,0 +1,6 @@
+server:
+  tomcat:
+    protocolHeader: X-Forwarded-Proto
+    remoteIpHeader: X-Forwarded-For
+    internalProxies: .*
+    httpsServerPort: X-Forwarded-Port

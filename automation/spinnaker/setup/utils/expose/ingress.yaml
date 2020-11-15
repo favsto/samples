@@ -1,0 +1,42 @@
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: spin-gate-certificate
+  namespace: spinnaker
+spec:
+  domains:
+    - demo-spinnaker.lab.injenia.it
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: spin-deck-certificate
+  namespace: spinnaker
+spec:
+  domains:
+    - demo-spinnaker-api.lab.injenia.it
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spin-ingress
+  namespace: spinnaker
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: spinnaker-ingress
+    networking.gke.io/managed-certificates: "spin-gate-certificate, spin-deck-certificate"
+spec:
+  rules:
+  - host: demo-spinnaker.lab.injenia.it
+    http:
+      paths:
+      - backend:
+          serviceName: spin-deck-nodeport
+          servicePort: 9000
+        path: /
+  - host: demo-spinnaker-api.lab.injenia.it
+    http:
+      paths:
+      - backend:
+          serviceName: spin-gate-nodeport
+          servicePort: 8084
+        path: /

@@ -1,0 +1,109 @@
+## REQUIRED VARIABLES:
+# $_CLUSTER_ZONE zone id of the zonal cluster
+# $_CLUSTER_NAME cluster name
+
+
+steps:
+
+# build images with multiple tags
+- name: gcr.io/cloud-builders/docker
+  id: "build-frontend"
+  waitFor: 
+  - '-'
+  args:
+  - "build"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-frontend:$SHORT_SHA"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-frontend:$BRANCH_NAME"
+  - "src/frontend"
+
+- name: gcr.io/cloud-builders/docker
+  id: "build-backend"
+  waitFor: 
+  - '-'
+  args:
+  - "build"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-backend:$SHORT_SHA"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-backend:$BRANCH_NAME"
+  - "src/backend"
+
+- name: gcr.io/cloud-builders/docker
+  id: "build-proxy"
+  waitFor: 
+  - '-'
+  args:
+  - "build"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-proxy:$SHORT_SHA"
+  - "--tag=eu.gcr.io/$PROJECT_ID/ms-ci-proxy:$BRANCH_NAME"
+  - "src/proxy"
+
+# push the image tags I need below
+- name: gcr.io/cloud-builders/docker
+  id: "push-frontend"
+  waitFor: 
+  - 'build-frontend'
+  args:
+  - "push"
+  - "eu.gcr.io/$PROJECT_ID/ms-ci-frontend:$SHORT_SHA"
+
+- name: gcr.io/cloud-builders/docker
+  id: "push-backend"
+  waitFor: 
+  - 'build-backend'
+  args:
+  - "push"
+  - "eu.gcr.io/$PROJECT_ID/ms-ci-backend:$SHORT_SHA"
+
+- name: gcr.io/cloud-builders/docker
+  id: "push-proxy"
+  waitFor: 
+  - 'build-proxy'
+  args:
+  - "push"
+  - "eu.gcr.io/$PROJECT_ID/ms-ci-proxy:$SHORT_SHA"
+
+# deploy images
+- name: gcr.io/cloud-builders/kubectl
+  id: "deploy-frontend"
+  waitFor: 
+  - 'push-frontend'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_CLUSTER_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_CLUSTER_NAME'
+  args:
+  - set
+  - image
+  - 'deployment/frontend'
+  - 'frontend=eu.gcr.io/$PROJECT_ID/ms-ci-frontend:$SHORT_SHA'
+
+- name: gcr.io/cloud-builders/kubectl
+  id: "deploy-backend"
+  waitFor: 
+  - 'push-backend'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_CLUSTER_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_CLUSTER_NAME'
+  args:
+  - set
+  - image
+  - 'deployment/backend'
+  - 'backend=eu.gcr.io/$PROJECT_ID/ms-ci-backend:$SHORT_SHA'
+
+- name: gcr.io/cloud-builders/kubectl
+  id: "deploy-proxy"
+  waitFor: 
+  - 'push-proxy'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_CLUSTER_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_CLUSTER_NAME'
+  args:
+  - set
+  - image
+  - 'deployment/proxy'
+  - 'proxy=eu.gcr.io/$PROJECT_ID/ms-ci-proxy:$SHORT_SHA'
+
+
+# push all other images in my repo
+images:
+- "eu.gcr.io/$PROJECT_ID/ms-ci-frontend:$BRANCH_NAME"
+- "eu.gcr.io/$PROJECT_ID/ms-ci-backend:$BRANCH_NAME"
+- "eu.gcr.io/$PROJECT_ID/ms-ci-proxy:$BRANCH_NAME"

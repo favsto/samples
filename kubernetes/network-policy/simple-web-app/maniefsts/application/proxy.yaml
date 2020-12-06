@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+  namespace: application
+spec:
+  selector:
+    tier: proxy
+    app: microservices-ci
+  type: NodePort
+  ports:
+  - name: be
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: application
+  labels:
+    tier: proxy
+    app: microservices-ci
+spec:
+  selector:
+    matchLabels:
+      tier: proxy
+      app: microservices-ci
+  template:
+    metadata:
+      labels:
+        tier: proxy
+        app: microservices-ci
+    spec:
+      containers:
+      - name: proxy
+        image: europe-west4-docker.pkg.dev/fausto-labs/labs/ms-proxy:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "100M"
+          limits:
+            cpu: "200m"
+            memory: "200M"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 20
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 10 
+        ports:
+        - containerPort:  80
+          name: be

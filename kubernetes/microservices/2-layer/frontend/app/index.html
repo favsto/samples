@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <title>Injenia Labs demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    body,h1 {font-family: "Raleway", sans-serif}
+    body, html {height: 100%}
+    .bgimg {
+      background-image: url('assets/background.jpg');
+      min-height: 100%;
+      background-position: center;
+      background-size: cover;
+    }
+    .accent {
+      color: #F7760D;
+    }
+  </style>
+
+  <script>
+    function loadData() {
+      fetch('/api/data')
+        .then(response => response.json()) 
+        .then (data => {
+          var time = data.time;
+          var env = ( data.env !== undefined ? data.env : "_ NO ENV _" );
+          var hostname = data.hostname;
+          document.querySelector("#message").innerText = env;
+          document.querySelector("#hostname").innerText = "from " + hostname;
+          document.querySelector("#time").innerText = "Host time: " + time;
+        }).catch(function(err) {
+          console.error("problemi con il server");
+        }
+      );
+    }
+  </script>
+
+  <body onload="loadData()">
+  <div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
+    <div class="w3-display-topleft w3-padding-large w3-xlarge">
+      <img src="assets/code_injenia_80.png" height="40" >
+      injenia <span class="accent">labs</span>
+    </div>
+    <div class="w3-display-middle">
+      <h1 class="w3-jumbo w3-animate-top" id="message">_ LOADING _</h1>
+      <hr class="w3-border-grey" style="margin:auto;width:40%">
+      <p class="w3-large w3-center" id="hostname"></p>
+    </div>
+    <div class="w3-display-bottomleft w3-padding-large">
+      <span id="time"></span>
+    </div>
+  </div>
+
+  </body>
+</html>

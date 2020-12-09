@@ -58,3 +58,4 @@ spec:
         ports:
         - containerPort:  80
           name: fe
+      terminationGracePeriodSeconds: 0

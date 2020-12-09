@@ -7,7 +7,7 @@ spec:
   selector:
     tier: backend
     app: microservices-ci
-  type: ClusterIP
+  type: NodePort
   ports:
   - name: be
     port: 80
@@ -47,17 +47,24 @@ spec:
           httpGet:
             path: /hc
             port: 8080
-          initialDelaySeconds: 20
+          initialDelaySeconds: 10
           timeoutSeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /hc
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 10 
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
         ports:
         - containerPort:  8080
           name: be
         env:
         - name: KZ_ENV
           value: "my CI app"
+      terminationGracePeriodSeconds: 0

@@ -11,3 +11,19 @@ spec:
             backend:
               serviceName: proxy
               servicePort: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend-router
+  namespace: backend
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: backend
+              servicePort: 80

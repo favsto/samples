@@ -57,4 +57,5 @@ spec:
           timeoutSeconds: 10 
         ports:
         - containerPort:  80
-          name: be
+          name: px
+      terminationGracePeriodSeconds: 0

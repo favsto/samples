@@ -9,9 +9,17 @@ http.createServer(function (req, res) {
   console.log("Request for: " + urlParts);
 
   if (urlParts == "" || urlParts == "/hc") {
-    res.writeHead(204);
-    res.end();
+
+    res.writeHead(200, {'Content-Type': 'application/json'});
+
+    var responseMessage = {
+      status: "roger"
+    };
+
+    res.end(JSON.stringify(responseMessage));
+
   } else if (urlParts == "/api/data") {
+
     var timeString = moment().format('YYYY-MM-DD HH:mm:ss');
     var envValue = process.env.KZ_ENV; // reads the environment variable KZ_ENV
     var hostname = os.hostname();
@@ -25,8 +33,11 @@ http.createServer(function (req, res) {
     };
 
     res.end(JSON.stringify(responseMessage));
+
   } else {
+
     res.writeHead(404);
     res.end();
+    
   }
 }).listen(8080);

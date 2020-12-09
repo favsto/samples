@@ -61,3 +61,4 @@ spec:
         env:
         - name: APP_NAME
           value: "MicroPolicy Application"
+      terminationGracePeriodSeconds: 0

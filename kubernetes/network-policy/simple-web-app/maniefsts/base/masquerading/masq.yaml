@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ip-masq-agent
+  namespace: kube-system
+data:
+  config: |-
+    nonMasqueradeCIDRs:
+      - 172.16.0.0/12 # Cluster Pod range
+    resyncInterval: 60s

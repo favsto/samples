@@ -22,6 +22,7 @@ metadata:
     tier: backend
     app: microservices-ci
 spec:
+  replicas: 2
   selector:
     matchLabels:
       tier: backend
@@ -32,16 +33,28 @@ spec:
         tier: backend
         app: microservices-ci
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: tier
+                  operator: In
+                  values:
+                  - metadata
+              topologyKey: topology.kubernetes.io/zone
       containers:
       - name: backend
         image: europe-west4-docker.pkg.dev/fausto-labs/labs/ms-backend:latest
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
+            cpu: "3000m"
             memory: "100M"
           limits:
-            cpu: "200m"
+            cpu: "3000m"
             memory: "200M"
         livenessProbe:
           httpGet:

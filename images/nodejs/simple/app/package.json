@@ -9,6 +9,6 @@
   "author": "Fausto Fusaro <fausto.fusaro@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "moment": "^2.24.0"
+    "moment": "^2.29.4"
   }
 }
